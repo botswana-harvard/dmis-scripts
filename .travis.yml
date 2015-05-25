@@ -16,10 +16,10 @@ install:
   - pip install -q -r requirements.txt --use-mirrors
 
 before_script:
-  - flake8 edc_base
+  - flake8 dmis_scripts
 
 script: 
-  - coverage run --source=edc_base manage.py test
+  - coverage run --source=dmis_scripts manage.py test
 
 after_success:
   - coveralls
