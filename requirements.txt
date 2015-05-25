@@ -1,0 +1,6 @@
+Django==1.8
+django-extensions==1.5.5
+Unipath==1.1
+edc-base==0.1.0
+edc_registration==0.1.0
+edc_consent==0.1.0
