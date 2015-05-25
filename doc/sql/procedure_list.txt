@@ -1,1 +1,10 @@
-Q0205-
+BHPLAB: move validated batches to LAB21
+
+EXEC Q0205
+EXEC Q0209
+exec Q0209
+exec Q0268
+exec BHPLAB.DBO.Q0125 1
+exec Q0125 2
+
+
