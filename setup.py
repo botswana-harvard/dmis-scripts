@@ -10,22 +10,20 @@ with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
-    name='edc-locator',
+    name='dmis-scripts',
     version='0.1.0',
     author=u'Erik van Widenfelt',
     author_email='ew2789@gmail.com',
     packages=find_packages(),
     include_package_data=True,
-    url='https://github.com/botswana-harvard/edc-locator',
+    url='https://github.com/botswana-harvard/dmis-scripts',
     license='GPL licence, see LICENCE',
-    description='Base models, forms and admin for participant locator in the Edc.',
+    description='custome scripts for dmis.',
     long_description=README,
     zip_safe=False,
     keywords='django participant locator',
     install_requires=[
         'edc-base>=0.1',
-        'edc-registration>=0.1',
-        'edc-consent>=0.1',
     ],
     classifiers=[
         'Environment :: Web Environment',
