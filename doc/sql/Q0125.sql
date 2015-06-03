@@ -33,7 +33,7 @@ SET DATEFORMAT dmy
 /*insert into _lab_log ([log_object], log_comment) values ('Q0125','started')*/
 
 declare cQ0125 cursor for 
-	select R.[ID],UPPER(r.[panel name]),R.[cytometer serial number],R.[sample id],
+	select R.[ID],LTRIM(UPPER(r.[panel name])),R.[cytometer serial number],R.[sample id],
 	R.sample_assay_date,
 		R.dateImported,R.result_guid,R.archive_filename 
 		from bhplab.dbo.results_101 as R
@@ -64,7 +64,7 @@ begin
 			/*get Q001X0 (guid) */
 			select @newid=Q001X0 from LAB21Response where id=@lab21_id /*get GUID to link LAB21D*/
 
-			if (select count(*) from  _lab_tests_dict where UPPER([panel name])=@panel_name and utestid<>'-9')=0 /*track any unknown  panel names and insert into DB for future reference*/
+			if (select count(*) from  _lab_tests_dict where LTRIM(UPPER([panel name]))=@panel_name and utestid<>'-9')=0 /*track any unknown  panel names and insert into DB for future reference*/
 				insert into _lab_log ([log_object], log_comment) values ('Q0125','['+isNull(@panel_name,'??null??')+']: unknown panel name for LID='+IsNull(@sample_id,'??NULL??')+'. cannot transfer result to LAB21')
 
 			else
