@@ -1,0 +1,92 @@
+/************************************************************/
+/*STEP 1: Import from GetResultsTemp to RESULTS_101         */
+/************************************************************/
+exec GetResultsTransferToResultTBL 'results_101_getresults_temp','results_101'
+
+/************************************************************/
+/*STEP 2: Move selected records to main result TBL          */
+/************************************************************/
+declare @id UNIQUEIDENTIFIER
+declare d cursor for 
+	select distinct transferProcessID from results_101_getresults_temp 
+	where transferProcessID is NOT NULL and transferIsDuplicate<>1
+open d
+fetch next from d into @id
+while @@fetch_status=0
+begin
+	exec GetResultsTTRT_S2 'results_101_getresults_temp','results_101',@id
+	fetch next from d into @id
+end 
+close d
+deallocate d
+
+/*flag duplicates*/
+update results_101 set isDuplicate=1 from
+(select [sample id] from results_101 
+group by [sample id]
+having count(*)>1) as A 
+where A.[sample id]=results_101.[sample id]
+
+/************************************************************/ 
+/*BHPLAB.Q0024: convert collection date to sample_assay_date*/
+/************************************************************/
+exec Q0024
+
+/************************************************************/ 
+/*BHPLAB.Q0064: CD4 panel without TRUCOUNT update CD4%      */
+/************************************************************/
+exec Q0064
+
+/************************************************************/ 
+/*BHPLAB.Q0066: CD4 update NULL cytometer serial number     */
+/************************************************************/
+exec Q0066
+
+/************************************************************/ 
+/*CD4 XL2 update result fields                              */
+/************************************************************/
+exec Q0134
+
+/************************************************************/ 
+/*regenerate report Q0292                                   */
+/************************************************************/
+exec Q0292
+
+/************************************************************/
+/*BHPLAB.Q0117: _TCPRaw to _TCPASTM (run _astm_parse)       */
+/************************************************************/
+exec BHPLAB.DBO.Q0117
+
+/************************************************************/
+/*BHPLAB.Q0113 _TCP to LAB21Response                        */
+/************************************************************/
+exec BHPLAB.DBO.Q0113
+
+/************************************************************/
+/*BHPLAB: remove transmitted ASTM but not validated         */
+/************************************************************/
+exec BHPLAB.DBO.Q0431
+
+/************************************************************/
+/*BHPLAB.Q0157: cleanup VL data                             */
+/************************************************************/
+exec BHPLAB.DBO.Q0157 
+
+/************************************************************/
+/*Q0423: clean up sample_assay_date date formats            */
+/************************************************************/
+exec Q0423
+
+
+
+/************************************************************/
+/*BHPLAB: move validated batches to LAB21                   */
+/************************************************************/
+EXEC BHPLAB.DBO.Q0205
+EXEC BHPLAB.DBO.Q0209
+exec BHPLAB.DBO.Q0209
+exec BHPLAB.DBO.Q0268
+exec BHPLAB.DBO.Q0125 1
+exec BHPLAB.DBO.Q0125 2
+
+
