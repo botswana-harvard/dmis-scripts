@@ -6,27 +6,7 @@ exec GetResultsTransferToResultTBL 'results_101_getresults_temp','results_101'
 /************************************************************/
 /*STEP 2: Move selected records to main result TBL          */
 /************************************************************/
-declare @id UNIQUEIDENTIFIER
-declare d cursor for 
-	select distinct transferProcessID from results_101_getresults_temp 
-	where transferProcessID is NOT NULL and transferIsDuplicate<>1
-open d
-fetch next from d into @id
-while @@fetch_status=0
-begin
-	exec GetResultsTTRT_S2 'results_101_getresults_temp','results_101',@id
-	fetch next from d into @id
-end 
-close d
-deallocate d
-
-/*flag duplicates*/
-update results_101 set isDuplicate=1 from
-(select [sample id] from results_101 
-group by [sample id]
-having count(*)>1) as A 
-where A.[sample id]=results_101.[sample id]
-
+exec bhplab.dbo.q0444
 /************************************************************/ 
 /*BHPLAB.Q0024: convert collection date to sample_assay_date*/
 /************************************************************/
