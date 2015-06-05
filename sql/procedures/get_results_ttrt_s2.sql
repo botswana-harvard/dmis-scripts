@@ -69,7 +69,9 @@ left join '+@destinationTBL+' as r on t.[sample id]=r.[sample id]
 where r.[sample_assay_date]=t.sample_assay_date) as A
 where A.result_GUID='+@SourceTBL+'.result_GUID
 and TransferProcessID='''+convert(varchar(1000),@newid)+''' and transferIsDuplicate<>1 '
-exec sp_executesql @Nsql
+
+print @Nsql
+-- exec sp_executesql @Nsql
 
 
 IF (@@ERROR <> 0)
@@ -91,7 +93,11 @@ set @sql1=''
 set @sql_prefix=''
 set @sql_suffix=''
 declare c cursor for
-	select c.name from sysobjects as o left join syscolumns as c on o.id=c.id where o.name=@SourceTBL and c.name<>'LID' and c.name<>'TransferDateTransfered' and c.name<>'TransferIsDuplicate' and c.name<>'TransferProcessDate'
+	select c.name from sysobjects as o 
+	left join syscolumns as c on o.id=c.id 
+	where o.name=@SourceTBL and c.name<>'LID' and
+	c.name<>'TransferDateTransfered' and
+	c.name<>'TransferIsDuplicate' and c.name<>'TransferProcessDate'
 open c
 fetch next from c into @fld
 while @@fetch_status=0
@@ -119,7 +125,8 @@ set @sql_prefix='SET IDENTITY_INSERT '+@destinationTBL+' ON
 set @sql_suffix=' from '+@SourceTBL+' where TransferProcessID='''+convert(varchar(1000),@newid)+''' and TransferIsDuplicate=2'
 /*EXECUTE*/
 
-exec (@sql_prefix+' insert into '+@destinationTBL+' ('+@sql1+@sql+') select '+@sql1+@sql+@sql_suffix)
+-- exec (@sql_prefix+' insert into '+@destinationTBL+' ('+@sql1+@sql+') select '+@sql1+@sql+@sql_suffix)
+print @sql_prefix+' insert into '+@destinationTBL+' ('+@sql1+@sql+') select '+@sql1+@sql+@sql_suffix
 
 IF (@@ERROR <> 0)
    SET @ErrorSave = @@ERROR
